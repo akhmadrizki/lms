@@ -4,13 +4,14 @@ namespace App\Models;
 
 use App\Models\Traits\Uuid;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CourseCategory extends Model
+class LessonTopic extends Model
 {
     use SoftDeletes, Uuid;
-
+    
     /**
      * The attributes that can be edited in admin (and mass assignable)
      *
@@ -18,6 +19,9 @@ class CourseCategory extends Model
      */
     protected $fillable = [
         'name',
+        'lesson_id',
+        'rank',
+        'content',
     ];
 
     /**
@@ -29,20 +33,18 @@ class CourseCategory extends Model
     }
 
     /**
-     * Get the indexable data array for the model.
-     *
-     * @return array<string, mixed>
+     * The lesson that the lesson topic belongs to.
      */
-    public function toSearchableArray()
+    public function lesson(): BelongsTo
     {
-        return $this->toArray();
+        return $this->belongsTo(Lesson::class);
     }
 
     /**
-     * The courses that belong to the category.
+     * The user progress for the lesson topic.
      */
-    public function courses(): BelongsToMany
+    public function userProgress(): HasMany
     {
-        return $this->belongsToMany(Course::class, 'course_has_categories', 'category_id', 'course_id');
+        return $this->hasMany(UserLessonTopicProgress::class);
     }
 }

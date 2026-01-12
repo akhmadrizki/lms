@@ -4,13 +4,14 @@ namespace App\Models;
 
 use App\Models\Traits\Uuid;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CourseCategory extends Model
+class QuizQuestion extends Model
 {
     use SoftDeletes, Uuid;
-
+    
     /**
      * The attributes that can be edited in admin (and mass assignable)
      *
@@ -18,6 +19,7 @@ class CourseCategory extends Model
      */
     protected $fillable = [
         'name',
+        'quiz_id',
     ];
 
     /**
@@ -29,20 +31,18 @@ class CourseCategory extends Model
     }
 
     /**
-     * Get the indexable data array for the model.
-     *
-     * @return array<string, mixed>
+     * The quiz that the question belongs to.
      */
-    public function toSearchableArray()
+    public function quiz(): BelongsTo
     {
-        return $this->toArray();
+        return $this->belongsTo(Quiz::class);
     }
 
     /**
-     * The courses that belong to the category.
+     * The answers that belong to the question.
      */
-    public function courses(): BelongsToMany
+    public function answers(): HasMany
     {
-        return $this->belongsToMany(Course::class, 'course_has_categories', 'category_id', 'course_id');
+        return $this->hasMany(QuizAnswer::class);
     }
 }
